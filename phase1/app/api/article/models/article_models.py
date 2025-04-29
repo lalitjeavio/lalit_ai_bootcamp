@@ -2,10 +2,11 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from db import Base
+from app.extensions import Base
+from app.mixins import TimestampMixin
 
 
-class Article(Base):
+class Article(TimestampMixin, Base):
     """ Article table have metadata of the Hacket News Story """
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
