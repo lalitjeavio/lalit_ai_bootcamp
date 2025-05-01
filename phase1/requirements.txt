@@ -7,4 +7,7 @@ psycopg2-binary==2.9.10 # postgres connection
 celery==5.5.2 # background task
 redis==5.2.1 # message broker for background task
 requests==2.32.3 # request calling api 
+pgvector==0.4.1 # Vector extension to postgres database for storing embedding
+openai==1.76.2 # openai SDK for text generation and embedding 
+beautifulsoup4==4.13.4 # extract text from html
 

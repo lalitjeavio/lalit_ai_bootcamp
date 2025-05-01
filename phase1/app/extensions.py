@@ -1,22 +1,26 @@
+import os
 
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from celery import Celery
 
-from sqlalchemy import create_engine, DateTime, func
-from sqlalchemy.orm import sessionmaker, declarative_base, Mapped, mapped_column
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 from .mixins import Base
 
 
-env = dotenv_values(".env")
+load_dotenv(".env")
 
 # ---------- SQLAlchemy Setup ----------
 
 DATABASE_URL = "postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}".format(
-    **env
+    POSTGRES_USER=os.environ.get('POSTGRES_USER'),
+    POSTGRES_PASSWORD=os.environ.get('POSTGRES_PASSWORD'),
+    POSTGRES_HOST=os.environ.get('POSTGRES_HOST'),
+    POSTGRES_DB=os.environ.get('POSTGRES_DB')
 )
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
@@ -28,8 +32,8 @@ celery_app = Celery(__name__)
 
 
 celery_app.conf.update(
-    broker_url=env.get('BROKER_URL'),
-    result_backend=env.get('BROKER_URL')
+    broker_url=os.environ.get('BROKER_URL'),
+    result_backend=os.environ.get('BROKER_URL')
 )
 
 celery_app.autodiscover_tasks(["app.api.article.tasks"])
