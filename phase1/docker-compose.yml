@@ -1,0 +1,46 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    restart: always
+    env_file: ./.env
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - internal
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - internal
+
+  web:
+    image: phase1:1.0.0
+    build: .
+    ports:
+      - 5000:5000
+    command: sh -c "alembic upgrade head && python main.py"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - internal
+
+  worker:
+    image: phase1:1.0.0
+    build: .
+    command: celery -A app.extensions.celery_app worker -B -l info
+    depends_on:
+      - web
+      - redis
+    networks:
+      - internal
+
+volumes:
+  pgdata:
+
+networks:
+  internal:
