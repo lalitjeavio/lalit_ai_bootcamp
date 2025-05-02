@@ -1,11 +1,12 @@
 import re
 
 from flask_restx import reqparse, abort
+from app.api.article.constants import Regex
 
 
 def validate_uuid(value):
-    uuid_regex = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-    if not re.match(uuid_regex, value):
+
+    if not re.match(Regex.uuid_regex.value, value):
         abort(406, "Invalid uuid format")
     return value
 

@@ -15,3 +15,6 @@ class Prompts(Enum):
     Return a single cohesive summary that reflects the complete state of the discussion so far.
     """
 
+
+class Regex(Enum):
+    uuid_regex = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'

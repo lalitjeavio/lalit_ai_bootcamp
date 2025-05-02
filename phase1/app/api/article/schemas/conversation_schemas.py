@@ -3,12 +3,12 @@ from flask_restx import fields, reqparse
 from app.api.article import article_api as api
 from app.common.config import MagicConstants
 
-uuid_regex = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+from app.api.article.constants import Regex
 
 
 ConversationRequestModel = api.model("ConversationRequestModel", {
     "question": fields.String(required=True),
-    "thread_id": fields.String(pattern=uuid_regex),
+    "thread_id": fields.String(pattern=Regex.uuid_regex.value),
 })
 
 ConversationModel = api.model("ConversationModel", {
