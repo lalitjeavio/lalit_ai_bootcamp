@@ -41,7 +41,7 @@ class ListArticleAPI(Resource):
             factory = LLMFactory(LLMConfig.PROVIDER.value)()
             embedding = factory.get_embedding(search)
             query = session.query(Article).join(Embedding.article).filter(
-                Embedding.embedding.cosine_distance(embedding) < 0.5
+                Embedding.embedding.cosine_distance(embedding) < 0.8
             )
 
         # calculation of pagination

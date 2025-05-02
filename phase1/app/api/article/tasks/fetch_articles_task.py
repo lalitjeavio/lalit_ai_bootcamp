@@ -35,7 +35,7 @@ class FetchArticle(Task):
     
     def save_embedding(self, text, article):
         """ Get embedding and store the embedding on db """
-        chunks_len = 2000
+        chunks_len = LLMConfig.EMBEDDING_CHUCK_LENGTH.value
         texts = [text[i:i + chunks_len] for i in range(0, len(text), chunks_len)]
         for text in texts:
             embedding = self.llm_factory.get_embedding(text)
@@ -50,7 +50,7 @@ class FetchArticle(Task):
 
         # get summary of article text
         summary = ""
-        chunks_len = 30000
+        chunks_len = LLMConfig.LLM_CHUCK_LENGTH.value
         texts = [text[i:i + chunks_len] for i in range(0, len(text), chunks_len)]
         for text in texts:
             prompt = Prompts.summary_prompt.value.format(text=text)
@@ -74,19 +74,21 @@ class FetchArticle(Task):
             response.raise_for_status()
             data = response.json()
             logger.info(data)
-            text, summary = self.get_article_text_and_summary(data.get("url"))
-            article = Article(
-                id=data.get("id"),
-                title=data.get("title"),
-                author=data.get("by"),
-                points=data.get("score"),
-                comment_counts=len(data.get("kids", [])),
-                url=data.get("url"),
-                text=text,
-                summary=summary
-            )
+            text, summary = '', ''
+            if data.get("url"):
+                text, summary = self.get_article_text_and_summary(data.get("url"))
+                article = Article(
+                    id=data.get("id"),
+                    title=data.get("title"),
+                    author=data.get("by"),
+                    points=data.get("score"),
+                    comment_counts=len(data.get("kids", [])),
+                    url=data.get("url"),
+                    text=text,
+                    summary=summary
+                )
 
-            self.save_embedding(text, article)
+                self.save_embedding(text, article)
 
             self.session.add(article)
 

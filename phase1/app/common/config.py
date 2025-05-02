@@ -10,6 +10,8 @@ class MagicConstants(Enum):
 class LLMConfig(Enum):
     """ LLMConfig """
     EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small")
+    EMBEDDING_CHUCK_LENGTH = 2000
+    LLM_CHUCK_LENGTH = 30000
     LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-3.5-turbo-0125")
     PROVIDER = os.environ.get("PROVIDER", "openai")
     OPENAI = "openai"

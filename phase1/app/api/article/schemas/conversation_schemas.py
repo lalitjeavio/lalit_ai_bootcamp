@@ -5,12 +5,14 @@ from app.common.config import MagicConstants
 
 
 ConversationRequestModel = api.model("ConversationRequestModel", {
-    "question": fields.String,
+    "question": fields.String(required=True),
+    "thread_id": fields.String,
 })
 
 ConversationModel = api.model("ConversationModel", {
     "question": fields.String,
-    "answer": fields.String
+    "answer": fields.String,
+    "thread_id": fields.String
 })
 
 ConversationPaginationModel = api.model("PaginationModel", {

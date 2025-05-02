@@ -15,7 +15,7 @@ ArticleModel = api.model("Article", {
     "summary": fields.String
 })
 
-PaginationModel = api.model("PaginationModel", {
+ArticlePaginationModel = api.model("PaginationModel", {
     "data": fields.List(fields.Nested(ArticleModel)),
     "page": fields.Integer,
     "page_size": fields.Integer,
