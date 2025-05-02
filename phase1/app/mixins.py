@@ -9,8 +9,6 @@ class Base:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-
 
 class TimestampMixin:
     created_at: Mapped[str] = mapped_column(DateTime, default=func.now())

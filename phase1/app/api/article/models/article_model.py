@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -10,6 +10,7 @@ from app.mixins import TimestampMixin
 class Article(TimestampMixin, Base):
     """ Article table have metadata of the Hacker News Story """
 
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     author: Mapped[str] = mapped_column(String(100), nullable=False)
     points: Mapped[int] = mapped_column(nullable=False)

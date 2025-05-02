@@ -7,7 +7,10 @@ from app.extensions import Base
 
 
 class Embedding(Base):
+
+    id: Mapped[int] = mapped_column(primary_key=True)
     article_id: Mapped[int] = mapped_column(ForeignKey("article.id"))
     embedding: Mapped[str] = mapped_column(Vector())
+
     article: Mapped["Article"] = relationship(back_populates="embeddings")
 

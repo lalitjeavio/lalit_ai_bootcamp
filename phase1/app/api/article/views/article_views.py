@@ -1,7 +1,7 @@
 from math import ceil
 
 from sqlalchemy import or_, desc
-from flask_restx import Resource
+from flask_restx import Resource, abort
 
 from app.extensions import SessionLocal
 from app.common import LLMFactory
@@ -14,7 +14,7 @@ from app.common.config import MagicConstants, LLMConfig
 @article_api.route('/')
 class ListArticleAPI(Resource):
 
-    @article_api.expect(article_args_parser)
+    @article_api.expect(article_args_parser, validate=True)
     @article_api.marshal_with(ArticlePaginationModel)
     def get(self):
         args = article_args_parser.parse_args()
@@ -41,7 +41,7 @@ class ListArticleAPI(Resource):
             factory = LLMFactory(LLMConfig.PROVIDER.value)()
             embedding = factory.get_embedding(search)
             query = session.query(Article).join(Embedding.article).filter(
-                Embedding.embedding.cosine_distance(embedding) < 0.8
+                Embedding.embedding.cosine_distance(embedding) < LLMConfig.COSINE_DISTANCE.value
             )
 
         # calculation of pagination
@@ -70,4 +70,7 @@ class ArticleDetail(Resource):
     def get(self, id):
         session = SessionLocal()
         article = session.query(Article).filter(Article.id==id).scalar()
-        return article.__dict__
+        if article:
+            return article.__dict__
+        abort(404, "Article not found!")
+
