@@ -23,6 +23,9 @@ class ConversationDetails(Resource):
 
         self.session = SessionLocal()
         self.llm_factory = LLMFactory(LLMConfig.PROVIDER.value)()
+        self.conversion_data = {}
+        self.total_page = 1
+        self.total_item = 0
 
     def __fetch_context(self):
         """ Fetch article from data using embedding based on question """
@@ -63,17 +66,17 @@ class ConversationDetails(Resource):
         args = conversation_args_parser.parse_args()
         self.page_size = args.get("page_size", MagicConstants.PAGE_SIZE.value)
         self.page = args.get('page', 1)
-        self.data = request.get_json()
-        self.thread_id = self.data.get("thread_id", False)
+        self.data = article_api.payload
+        self.thread_id = self.data.get("thread_id", uuid.uuid4())
         
-        self.conversion_data = {"thread_id": uuid.uuid4()}
+        self.conversion_data = {"thread_id": self.thread_id}
         
         try:
             # if thread exist get previous conversation
             previous_conversation = ""
             if self.thread_id:
                 previous_conversation = self.__fetch_previous_conversion()
-        
+
             # get latest article based on the question
             context = self.__fetch_context()
 
@@ -86,7 +89,7 @@ class ConversationDetails(Resource):
             self.session.commit()
             
             # fetch the conversions from databases
-            conversion_data = self.__fetch_conversation()
+            self.conversion_data = self.__fetch_conversation()
         except Exception as e:
             current_app.logger.error(e, exc_info=True)
             self.session.rollback()
@@ -94,10 +97,11 @@ class ConversationDetails(Resource):
             self.session.close()
     
         return {
-            "data": conversion_data,
+            "data": self.conversion_data,
             "page": self.page,
             "page_size": self.page_size,
             "total_page": self.total_page,
             "total_item": self.total_item
         }
+    
 
